@@ -1,7 +1,7 @@
 package test;
 
-import com.qlone.craw.parse.annotation.Data;
-import com.qlone.craw.parse.annotation.Text;
+import com.qlone.craw.parse.annotation.*;
+
 import java.util.List;
 
 /**
@@ -10,14 +10,17 @@ import java.util.List;
  */
 
 public class Accept {
-    @Text(value = "div#pane-news li ")
-    private List<String> text;
+//    @Attr(value = "div#pane-news li a",attr = "href")
 
-    public List<String> getText() {
-        return text;
+    @Select("div#pane-news li")
+    private List<News> news;
+
+    public List<News> getNews() {
+        return news;
     }
 
-    public void setText(List<String> text) {
-        this.text = text;
+    public void setNews(List<News> news) {
+        this.news = news;
     }
+
 }

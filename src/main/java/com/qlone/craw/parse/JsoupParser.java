@@ -1,6 +1,10 @@
 package com.qlone.craw.parse;
 
 import java.util.List;
+
+import com.qlone.craw.parse.convert.ClazzResponseConverter;
+import com.qlone.craw.parse.convert.DefaultResponseConverterFactory;
+import com.qlone.craw.parse.convert.ResponseConverter;
 import org.jsoup.nodes.Element;
 import java.lang.reflect.Field;
 import java.lang.reflect.Type;
@@ -16,36 +20,10 @@ import java.util.ArrayList;
  * @date 2020-11-11 16:34
  */
 public class JsoupParser {
-    private List<ResponseConverter.ResponseConverterFactory> converterFactories;
 
-
-    public JsoupParser(List<ResponseConverter.ResponseConverterFactory> converterFactories) {
-        this.converterFactories = converterFactories;
-        if(converterFactories == null){
-            converterFactories = new ArrayList<>();
-        }
-        converterFactories.add(new DefaultResponseConverterFactory());
+    public static ResponseConverter getResponseConverter(Type rawType){
+        return JsoupParserConfig.getResponseConverter(rawType);
     }
-
-    public void addConvertFactory(ResponseConverter.ResponseConverterFactory factory){
-        converterFactories.add(factory);
-    }
-
-    public <RestultT> ResponseConverter<String,RestultT> getResponseConverter(Type type){
-        return nextResponseConverter(type);
-    }
-
-    private <RestultT> ResponseConverter<String,RestultT> nextResponseConverter(Type type){
-        for(int i = 0; i < converterFactories.size(); i++){
-            ResponseConverter<String,RestultT> responseConverter = converterFactories.get(i).get(type);
-            if(responseConverter != null){
-                return responseConverter;
-            }
-        }
-        //return default
-        throw new IllegalArgumentException("no ResponseConverter found : " + type.getTypeName());
-    }
-
 
     public <T> T parse(Element element,Type type) throws IllegalAccessException, InstantiationException {
         Class<T> clazz;

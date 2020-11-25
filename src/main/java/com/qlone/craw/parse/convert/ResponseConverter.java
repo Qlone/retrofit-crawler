@@ -1,4 +1,4 @@
-package com.qlone.craw.parse;
+package com.qlone.craw.parse.convert;
 
 import java.lang.reflect.Type;
 
@@ -10,6 +10,6 @@ public interface ResponseConverter<F,T> {
     T convert(F value);
 
     interface ResponseConverterFactory<RestultT>{
-        ResponseConverter<String,RestultT> get(Type paramType);
+        ResponseConverter<?,RestultT> get(Type rawType);
     }
 }

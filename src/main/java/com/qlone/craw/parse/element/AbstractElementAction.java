@@ -1,6 +1,10 @@
 package com.qlone.craw.parse.element;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
+
+import com.qlone.craw.parse.annotation.Select;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
@@ -12,7 +16,6 @@ import java.util.ArrayList;
  */
 public abstract class AbstractElementAction<RestultT> implements ElementAction<RestultT> {
 
-
     private int skip;
     private int size;
 
@@ -21,12 +24,20 @@ public abstract class AbstractElementAction<RestultT> implements ElementAction<R
         this.size = size;
     }
 
+    /**
+     *
+     * @param elements
+     * @return
+     */
     @Override
     public List<RestultT> action(Elements elements) {
         List<RestultT> array = new ArrayList<>(elements.size());
-        for(int i = skip; i < size && i < elements.size();i++){
-            array.add(doAction(elements.get(i)));
+
+        for (int i = skip; i < size && i < elements.size(); i++) {
+            RestultT restultT = doAction(elements.get(i));
+            array.add(restultT);
         }
+
         return array;
     }
 
@@ -53,7 +64,7 @@ public abstract class AbstractElementAction<RestultT> implements ElementAction<R
 
         @Override
         protected String doAction(Element element) {
-            return element.text();
+            return element.html();
         }
     }
 
@@ -96,18 +107,16 @@ public abstract class AbstractElementAction<RestultT> implements ElementAction<R
         }
     }
 
-    public static class SelectAction extends AbstractElementAction<Elements> {
+    public static class SelectAction extends AbstractElementAction<Element> {
 
-        private String childQuery;
 
-        public SelectAction(int skip, int size,String childQuery) {
+        public SelectAction(int skip, int size) {
             super(skip, size);
-            this.childQuery = childQuery;
         }
 
         @Override
-        protected Elements doAction(Element element) {
-            return element.select(this.childQuery);
+        protected Element doAction(Element element) {
+            return element;
         }
     }
 }

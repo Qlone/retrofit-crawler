@@ -21,8 +21,6 @@ public class Main {
         Baidu baidu = build.create(Baidu.class);
         Call<Accept> html = baidu.html();
         Response<Accept> execute = html.execute();
-        for(String news: execute.body().getText()){
-            System.out.println(news);
-        }
+        System.out.println(JSONObject.toJSONString(execute.body()));
     }
 }
