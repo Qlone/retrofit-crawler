@@ -4,6 +4,8 @@ import com.alibaba.fastjson.JSONObject;
 import com.qlone.craw.Call;
 import com.qlone.craw.Response;
 import com.qlone.craw.RetrofitCrawler;
+import test.bean.Accept;
+import test.bean.GuoneiBean;
 
 import java.io.IOException;
 
@@ -19,8 +21,13 @@ public class Main {
                 .baseUrl("https://news.baidu.com")
                 .build();
         Baidu baidu = build.create(Baidu.class);
-        Call<Accept> html = baidu.html();
-        Response<Accept> execute = html.execute();
-        System.out.println(JSONObject.toJSONString(execute.body()));
+
+        Call<Accept> index = baidu.html();
+        Call<GuoneiBean> guonei = baidu.guonei("/guonei");
+
+        Response<Accept> indexResp = index.execute();
+        Response<GuoneiBean> guoneiResp = guonei.execute();
+        System.out.println(JSONObject.toJSONString(indexResp.body()));
+        System.out.println(JSONObject.toJSONString(guoneiResp.body()));
     }
 }

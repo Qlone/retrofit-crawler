@@ -16,12 +16,12 @@ import java.util.Map;
 final class ConnectionBuilder {
 
     private String baseUrl;
-    private Connection.Method method;
     private String relativeUrl;
-
+    private Connection.Method method;
     private Proxy proxy;
     private Map<String, String> headers;
     private Map<String, String> cookies;
+    private Map<String, String> data;
     private @Nullable
     String requestBody;
 
@@ -32,6 +32,7 @@ final class ConnectionBuilder {
         this.proxy = proxy;
         headers = new HashMap<>();
         cookies = new HashMap<>();
+        data= new HashMap<>();
     }
 
     protected void setRequestBody(String requestBody) {
@@ -39,11 +40,38 @@ final class ConnectionBuilder {
     }
 
     protected void addHeader(String name, String value) {
-        headers.put(name, value);
+        this.headers.put(name, value);
+    }
+
+    protected void addHeaders(HashMap<String,String> headers){
+        this.headers.putAll(headers);
     }
 
     protected void addCookie(String name, String value) {
         cookies.put(name,value);
+    }
+
+    protected void addCookies(HashMap<String,String> cookies){
+        this.cookies.putAll(cookies);
+    }
+
+    protected void addData(String name, Object value){
+
+        String string = value.toString();
+        this.data.put(name,string);
+    }
+
+    protected void addDatas(HashMap<String,String> datas){
+        this.data.putAll(datas);
+    }
+
+    protected void setUrl(String url){
+        this.baseUrl = url;
+        this.relativeUrl = "";
+    }
+
+    protected void setRelativeUrl(String relativeUrl){
+        this.relativeUrl =relativeUrl;
     }
 
     Connection get() {
@@ -60,7 +88,7 @@ final class ConnectionBuilder {
         }
         connection.headers(headers);
         connection.cookies(cookies);
-
+        connection.data(data);
         return connection;
     }
 

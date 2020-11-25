@@ -3,9 +3,7 @@ package com.qlone.craw;
 import com.qlone.craw.parse.DocumentObject;
 import com.sun.istack.internal.Nullable;
 import org.jsoup.nodes.Document;
-import test.Accept;
 
-import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 

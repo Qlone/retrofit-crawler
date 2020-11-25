@@ -7,8 +7,10 @@ import org.jsoup.Connection;
 import java.io.IOException;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
+import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.net.Proxy;
+import java.util.Map;
 
 /**
  * @author heweinan
@@ -94,10 +96,10 @@ public class ConnectionFactory {
 
             int parameterCount = parameterAnnotationsArray.length;
             parameterHandlers = new ParameterHandler<?>[parameterCount];
-//            for (int p = 0, lastParameter = parameterCount - 1; p < parameterCount; p++) {
-//                parameterHandlers[p] =
-//                        parseParameter(p, parameterTypes[p], parameterAnnotationsArray[p], p == lastParameter);
-//            }
+            for (int p = 0; p < parameterCount; p++) {
+                parameterHandlers[p] =
+                        parseParameter(p, parameterTypes[p], parameterAnnotationsArray[p]);
+            }
 
             return new ConnectionFactory(this);
         }
@@ -140,5 +142,112 @@ public class ConnectionFactory {
         }
 
         //解析参数
+        private @Nullable ParameterHandler<?> parseParameter(
+                int p, Type parameterType, @Nullable Annotation[] annotations) {
+            ParameterHandler<?> result = null;
+            if(annotations != null){
+                for(Annotation annotation: annotations){
+                    ParameterHandler<?> annotationAction =  parseParameterAnnotation(p,parameterType,annotations,annotation);
+
+                    if(annotationAction == null){
+                        continue;
+                    }
+                    if(result != null){
+                        throw Utils.parameterError(
+                                method, p, "Multiple RetrofitCrawler annotations found, only one allowed.");
+                    }
+                    result = annotationAction;
+                }
+            }
+            if(result == null){
+                throw Utils.parameterError(method, p, "No RetrofitCrawler annotation found.");
+            }
+
+            return result;
+        }
+
+        private ParameterHandler<?> parseParameterAnnotation(
+                int p, Type type, Annotation[] annotations, Annotation annotation){
+            if(annotation instanceof RelativeUrl){
+                if(type == String.class){
+                    return new ParameterHandler.RelativeUrl();
+                }else {
+                   throw Utils.parameterError(method,p,"@RelativeUrl must be String");
+                }
+            }else if(annotation instanceof Path){
+                if(type == String.class){
+                    return new ParameterHandler.Path();
+                }else {
+                    throw Utils.parameterError(method,p,"@Path must be String");
+                }
+            }else if(annotation instanceof Query){
+                Query anno = (Query) annotation;
+                return new ParameterHandler.Query(anno.value());
+            }else if(annotation instanceof QueryMap){
+                Class<?> rawParamType = Utils.getRawType(type);
+                if(!Map.class.isAssignableFrom(rawParamType)){
+                    throw Utils.parameterError(method, p, "@QueryMap parameter type must be Map.");
+                }
+                if(!(type instanceof ParameterizedType)){
+                    throw Utils.parameterError(method,p,"Map must include generic types (e.g., Map<String, String>)");
+                }
+                ParameterizedType parameterizedType = (ParameterizedType) type;
+                Type keyType = Utils.getParameterUpperBound(0, parameterizedType);
+                if(String.class != keyType){
+                    throw Utils.parameterError(method, p, "@QueryMap keys must be of type String: " + keyType);
+                }
+                //should convert value for next version
+                return new ParameterHandler.QueryMap();
+            }else if(annotation instanceof Header){
+                Header anno = (Header)annotation;
+                if(type == String.class){
+                    return new ParameterHandler.Header(anno.value());
+                }else {
+                    throw Utils.parameterError(method,p,"@Header must be String");
+                }
+            }else if(annotation instanceof HeaderMap){
+                Class<?> rawParamType = Utils.getRawType(type);
+                if(!Map.class.isAssignableFrom(rawParamType)){
+                    throw Utils.parameterError(method, p, "@HeaderMap parameter type must be Map.");
+                }
+                if(!(type instanceof ParameterizedType)){
+                    throw Utils.parameterError(method,p,"Map must include generic types (e.g., Map<String, String>)");
+                }
+                ParameterizedType parameterizedType = (ParameterizedType) type;
+                Type keyType = Utils.getParameterUpperBound(0, parameterizedType);
+                if(String.class != keyType){
+                    throw Utils.parameterError(method, p, "@HeaderMap keys must be of type String: " + keyType);
+                }
+                //should convert value for next version
+                return new ParameterHandler.HeaderMap();
+            }else if(annotation instanceof Cookie){
+                Cookie anno = (Cookie)annotation;
+                if(type == String.class){
+                    return new ParameterHandler.Cookie(anno.value());
+                }else {
+                    throw Utils.parameterError(method,p,"@Cookie must be String");
+                }
+            }else if(annotation instanceof CookieMap){
+                Class<?> rawParamType = Utils.getRawType(type);
+                if(!Map.class.isAssignableFrom(rawParamType)){
+                    throw Utils.parameterError(method, p, "@CookieMap parameter type must be Map.");
+                }
+                if(!(type instanceof ParameterizedType)){
+                    throw Utils.parameterError(method,p,"Map must include generic types (e.g., Map<String, String>)");
+                }
+                ParameterizedType parameterizedType = (ParameterizedType) type;
+                Type keyType = Utils.getParameterUpperBound(0, parameterizedType);
+                if(String.class != keyType){
+                    throw Utils.parameterError(method, p, "@CookieMap keys must be of type String: " + keyType);
+                }
+                //should convert value for next version
+                return new ParameterHandler.CookieMap();
+            }else if(annotation instanceof Body){
+                return new ParameterHandler.Body();
+            }
+
+            //no annotation found
+            return null;
+        }
     }
 }

@@ -1,4 +1,4 @@
-package test;
+package test.bean;
 
 import com.qlone.craw.parse.annotation.Attr;
 import com.qlone.craw.parse.annotation.Text;
