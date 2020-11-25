@@ -1,9 +1,7 @@
 package com.qlone.craw;
 
+import com.qlone.craw.http.*;
 import com.sun.istack.internal.Nullable;
-import com.qlone.craw.http.DELETE;
-import com.qlone.craw.http.GET;
-import com.qlone.craw.http.POST;
 import org.jsoup.Connection;
 
 import java.io.IOException;
@@ -112,6 +110,16 @@ public class ConnectionFactory {
                 parseHttpMethodAndPath("GET",((GET) annotation).value());
             }else if(annotation instanceof POST){
                 parseHttpMethodAndPath("POST",((POST) annotation).value());
+            }else if(annotation instanceof HEAD){
+                parseHttpMethodAndPath("HEAD",((HEAD) annotation).value());
+            }else if(annotation instanceof OPTIONS){
+                parseHttpMethodAndPath("OPTIONS",((OPTIONS) annotation).value());
+            }else if(annotation instanceof PATCH){
+                parseHttpMethodAndPath("PATCH",((PATCH) annotation).value());
+            }else if(annotation instanceof PUT){
+                parseHttpMethodAndPath("PATCH",((PUT) annotation).value());
+            }else if(annotation instanceof TRACE){
+                parseHttpMethodAndPath("PATCH",((TRACE) annotation).value());
             }
         }
 
