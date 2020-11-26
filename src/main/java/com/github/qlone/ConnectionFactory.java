@@ -1,7 +1,6 @@
 package com.github.qlone;
 
 import com.github.qlone.http.*;
-import com.qlone.craw.http.*;
 import org.jsoup.Connection;
 
 import java.io.IOException;

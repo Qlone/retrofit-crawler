@@ -2,7 +2,6 @@ package com.github.qlone.parse;
 
 import com.github.qlone.Utils;
 import com.github.qlone.parse.annotation.*;
-import com.qlone.craw.parse.annotation.*;
 import com.github.qlone.parse.convert.ResponseConverter;
 import com.github.qlone.parse.element.AbstractElementAction;
 import com.github.qlone.parse.element.ElementAction;
