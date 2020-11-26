@@ -1,10 +1,8 @@
-package test;
+package test.baidu;
 
 import com.github.qlone.Call;
 import com.github.qlone.http.POST;
 import com.github.qlone.http.RelativeUrl;
-import test.bean.Accept;
-import test.bean.GuoneiBean;
 
 /**
  * @author heweinan

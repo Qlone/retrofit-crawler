@@ -4,8 +4,11 @@ import com.alibaba.fastjson.JSONObject;
 import com.github.qlone.Call;
 import com.github.qlone.Response;
 import com.github.qlone.RetrofitCrawler;
-import test.bean.Accept;
-import test.bean.GuoneiBean;
+import test.baidu.Accept;
+import test.baidu.Baidu;
+import test.baidu.GuoneiBean;
+import test.google.Google;
+import test.google.TopStoyResp;
 
 import java.io.IOException;
 
@@ -17,17 +20,14 @@ public class Main {
 
     //div.tags-box > a
     public static void main(String[] args) throws IOException {
-        RetrofitCrawler build = new RetrofitCrawler.Builder()
-                .baseUrl("https://news.baidu.com")
+        RetrofitCrawler retrofitCrawler = new RetrofitCrawler.Builder()
+                .baseUrl("https://news.google.com")
                 .build();
-        Baidu baidu = build.create(Baidu.class);
 
-        Call<Accept> index = baidu.html();
-        Call<GuoneiBean> guonei = baidu.guonei("/guonei");
+        Google google = retrofitCrawler.create(Google.class);
 
-        Response<Accept> indexResp = index.execute();
-        Response<GuoneiBean> guoneiResp = guonei.execute();
-        System.out.println(JSONObject.toJSONString(indexResp.body()));
-        System.out.println(JSONObject.toJSONString(guoneiResp.body()));
+        Call<TopStoyResp> topstories = google.topstories();
+        Response<TopStoyResp> execute = topstories.execute();
+        System.out.println(JSONObject.toJSONString(execute.body()));
     }
 }

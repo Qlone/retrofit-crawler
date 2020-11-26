@@ -1,4 +1,4 @@
-package test.bean;
+package test.baidu;
 
 import com.github.qlone.parse.annotation.Attr;
 import com.github.qlone.parse.annotation.Text;
