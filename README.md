@@ -3,9 +3,9 @@ help you get a html like json
 
 ----
 
-#### Make a interface
+### Make a interface
 
-First,we will create a interface like retrofit,and add some rules like json
+First,you can create a interface like retrofit and add some rules like json.
 
 ```java
 public interface Google {
@@ -30,8 +30,8 @@ public class TopStoyResp {
     }
 }
 ```
-#### Crawling web data
-create a retrofitCrawler,in order to init our interface
+### Crawling web data
+Create a retrofitCrawler,in order to init our interface
 ```java
 RetrofitCrawler retrofitCrawler = new RetrofitCrawler.Builder()
                 .baseUrl("https://news.google.com")
@@ -39,7 +39,7 @@ RetrofitCrawler retrofitCrawler = new RetrofitCrawler.Builder()
 Google google = retrofitCrawler.create(Google.class);
 ```
 
-now, you can use google.class to get some data.you can execute sync or async.
+Now, you can use google.class to get some data.you can execute sync or async.
 ```java
  Call<TopStoyResp> topstories = google.topstories();
  Response<TopStoyResp> execute = topstories.execute();
@@ -47,5 +47,5 @@ now, you can use google.class to get some data.you can execute sync or async.
 ```
 
 
-#### Issuses
+### Issuses
 Report issues to hewinana@gmail.com or [github issues](https://github.com/Qlone/retrofit-crawler/issues)
