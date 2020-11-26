@@ -1,6 +1,6 @@
 package test.bean;
 
-import com.qlone.craw.parse.annotation.Text;
+import com.github.qlone.parse.annotation.Text;
 import java.util.List;
 
 /**

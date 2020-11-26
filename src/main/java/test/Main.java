@@ -1,9 +1,9 @@
 package test;
 
 import com.alibaba.fastjson.JSONObject;
-import com.qlone.craw.Call;
-import com.qlone.craw.Response;
-import com.qlone.craw.RetrofitCrawler;
+import com.github.qlone.Call;
+import com.github.qlone.Response;
+import com.github.qlone.RetrofitCrawler;
 import test.bean.Accept;
 import test.bean.GuoneiBean;
 
