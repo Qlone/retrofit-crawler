@@ -9,6 +9,7 @@
     <version>1.0.0</version>
     <description>help you get a html like json,thanks retrofit and Jsoup</description>
     <url>https://github.com/Qlone/retrofit-crawler</url>
+    <name>retrofit-crawler</name>
 
     <licenses>
         <license>
