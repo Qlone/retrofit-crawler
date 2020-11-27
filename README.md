@@ -2,6 +2,18 @@
 help you get a html like json
 
 ----
+### Maven
+```
+<dependency>
+  <groupId>com.github.qlone</groupId>
+  <artifactId>retrofit-crawler</artifactId>
+  <version>1.0.0</version>
+</dependency>
+```
+### Gradle
+```
+implementation 'com.github.qlone:retrofit-crawler:1.0.0'
+```
 
 ### Make a interface
 
