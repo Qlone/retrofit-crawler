@@ -10,7 +10,6 @@ import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.lang.reflect.Type;
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.Objects;
@@ -201,6 +200,7 @@ public final class RetrofitCrawler {
 
             List<CallAdapter.Factory> callAdapterFactories = new ArrayList<>(this.callAdapterFactories);
             callAdapterFactories.add(new DefaultCallAdapterFactory());
+            callAdapterFactories.add(new ResponseCallAdapterFactory());
 
             return new RetrofitCrawler(baseUrl,unmodifiableList(callAdapterFactories),unmodifiableList(converterFactories),proxy,seleniumBuilder,connectionManage);
         }
