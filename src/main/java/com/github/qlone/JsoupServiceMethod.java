@@ -24,7 +24,7 @@ abstract class JsoupServiceMethod<ResponseT, ReturnT> extends ServiceMethod<Retu
         Type ResponseType = callAdapter.responseType();
         Converter<Document, ResponseT> documentConverter = createDocumentConverter(retrofitCrawler, method, ResponseType);
 
-        ConnectionManage client = retrofitCrawler.seleniumClient;
+        ConnectionManage client = retrofitCrawler.connectionManage;
         return new CallAdapted<>(connectionFactory,client,callAdapter,documentConverter);
     }
 
