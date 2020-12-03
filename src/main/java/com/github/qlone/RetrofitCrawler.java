@@ -10,6 +10,7 @@ import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.lang.reflect.Type;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.Objects;
@@ -28,7 +29,7 @@ public final class RetrofitCrawler {
     final String baseUrl;
     final java.net.Proxy proxy;
     final SeleniumDriverBuilder seleniumBuilder;
-    final ConnectionManage seleniumClient;
+    final ConnectionManage connectionManage;
     //请求封装
     final List<CallAdapter.Factory> callAdapterFactories;
     final List<Converter.Factory> converterFactories;
@@ -38,13 +39,13 @@ public final class RetrofitCrawler {
                               List<Converter.Factory> converterFactories,
                               java.net.Proxy proxy,
                               SeleniumDriverBuilder seleniumBuilder,
-                              ConnectionManage seleniumClient){
+                              ConnectionManage connectionManage){
         this.baseUrl = baseUrl;
         this.callAdapterFactories = callAdapterFactories;
         this.converterFactories = converterFactories;
         this.proxy = proxy;
         this.seleniumBuilder = seleniumBuilder;
-        this.seleniumClient = seleniumClient;
+        this.connectionManage = connectionManage;
     }
 
     //创建代理类
@@ -142,8 +143,9 @@ public final class RetrofitCrawler {
     public static class Builder{
         private String baseUrl;
         private java.net.Proxy proxy;
+        private int maxRequest;
         private SeleniumDriverBuilder seleniumBuilder;
-        private ConnectionManage seleniumClient;
+        private ConnectionManage connectionManage;
         private List<CallAdapter.Factory> callAdapterFactories = new ArrayList<>();
         private List<Converter.Factory> converterFactories = new ArrayList<>();
 
@@ -176,24 +178,31 @@ public final class RetrofitCrawler {
             return this;
         }
 
-        public Builder seleniumClient(ConnectionManage seleniumClient){
-            Objects.requireNonNull(seleniumClient);
-            this.seleniumClient = seleniumClient;
+        public Builder connectionManage(ConnectionManage connectionManage){
+            Objects.requireNonNull(connectionManage);
+            this.connectionManage = connectionManage;
             return this;
         }
+
+        public Builder maxReuqest(int maxRequest){
+            this.maxRequest = maxRequest;
+            return this;
+        }
+
 
         public RetrofitCrawler build(){
             if (baseUrl == null) {
                 throw new IllegalStateException("Base URL required.");
             }
-            if(seleniumClient == null){
-                seleniumClient = new ConnectionManage();
+            if(connectionManage == null){
+                connectionManage = new ConnectionManage();
             }
+            connectionManage.setMaxRequest(maxRequest);
 
             List<CallAdapter.Factory> callAdapterFactories = new ArrayList<>(this.callAdapterFactories);
             callAdapterFactories.add(new DefaultCallAdapterFactory());
 
-            return new RetrofitCrawler(baseUrl,unmodifiableList(callAdapterFactories),unmodifiableList(converterFactories),proxy,seleniumBuilder,seleniumClient);
+            return new RetrofitCrawler(baseUrl,unmodifiableList(callAdapterFactories),unmodifiableList(converterFactories),proxy,seleniumBuilder,connectionManage);
         }
     }
 }
