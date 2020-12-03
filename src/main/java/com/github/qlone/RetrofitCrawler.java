@@ -1,5 +1,8 @@
 package com.github.qlone;
 
+import com.github.qlone.selenium.ConnectionManage;
+import com.github.qlone.selenium.SeleniumDriverBuilder;
+import com.github.qlone.selenium.SeleniumDriver;
 import org.jsoup.nodes.Document;
 
 import java.lang.annotation.Annotation;
@@ -24,6 +27,8 @@ public final class RetrofitCrawler {
 
     final String baseUrl;
     final java.net.Proxy proxy;
+    final SeleniumDriverBuilder seleniumBuilder;
+    final ConnectionManage seleniumClient;
     //请求封装
     final List<CallAdapter.Factory> callAdapterFactories;
     final List<Converter.Factory> converterFactories;
@@ -31,11 +36,15 @@ public final class RetrofitCrawler {
     protected RetrofitCrawler(String baseUrl,
                               List<CallAdapter.Factory> callAdapterFactories,
                               List<Converter.Factory> converterFactories,
-                              java.net.Proxy proxy){
+                              java.net.Proxy proxy,
+                              SeleniumDriverBuilder seleniumBuilder,
+                              ConnectionManage seleniumClient){
         this.baseUrl = baseUrl;
         this.callAdapterFactories = callAdapterFactories;
         this.converterFactories = converterFactories;
         this.proxy = proxy;
+        this.seleniumBuilder = seleniumBuilder;
+        this.seleniumClient = seleniumClient;
     }
 
     //创建代理类
@@ -70,6 +79,13 @@ public final class RetrofitCrawler {
             }
         }
         return result;
+    }
+
+    public SeleniumDriverBuilder webDriverBuilder(){
+        if(seleniumBuilder.getDriverContent() == null){
+            throw new IllegalStateException("webDriver required.");
+        }
+        return this.seleniumBuilder;
     }
 
     public CallAdapter<?, ?> callAdapter(Type returnType, Annotation[] annotations) {
@@ -126,10 +142,13 @@ public final class RetrofitCrawler {
     public static class Builder{
         private String baseUrl;
         private java.net.Proxy proxy;
+        private SeleniumDriverBuilder seleniumBuilder;
+        private ConnectionManage seleniumClient;
         private List<CallAdapter.Factory> callAdapterFactories = new ArrayList<>();
         private List<Converter.Factory> converterFactories = new ArrayList<>();
 
         public Builder() {
+            seleniumBuilder = new SeleniumDriverBuilder();
         }
 
         public Builder baseUrl(String baseUrl){
@@ -147,14 +166,34 @@ public final class RetrofitCrawler {
             return this;
         }
 
+        public Builder seleniumDirver(SeleniumDriver seleniumDriver){
+            this.seleniumBuilder.driver(seleniumDriver);
+            return this;
+        }
+
+        public Builder seleniumDirverPath(String path){
+            this.seleniumBuilder.driverPath(path);
+            return this;
+        }
+
+        public Builder seleniumClient(ConnectionManage seleniumClient){
+            Objects.requireNonNull(seleniumClient);
+            this.seleniumClient = seleniumClient;
+            return this;
+        }
+
         public RetrofitCrawler build(){
             if (baseUrl == null) {
                 throw new IllegalStateException("Base URL required.");
             }
+            if(seleniumClient == null){
+                seleniumClient = new ConnectionManage();
+            }
+
             List<CallAdapter.Factory> callAdapterFactories = new ArrayList<>(this.callAdapterFactories);
             callAdapterFactories.add(new DefaultCallAdapterFactory());
 
-            return new RetrofitCrawler(baseUrl,unmodifiableList(callAdapterFactories),unmodifiableList(converterFactories),proxy);
+            return new RetrofitCrawler(baseUrl,unmodifiableList(callAdapterFactories),unmodifiableList(converterFactories),proxy,seleniumBuilder,seleniumClient);
         }
     }
 }

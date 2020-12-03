@@ -1,6 +1,7 @@
 package com.github.qlone;
 
 import com.github.qlone.http.*;
+import com.github.qlone.selenium.SeleniumDriverBuilder;
 import org.jsoup.Connection;
 
 import java.io.IOException;
@@ -9,6 +10,8 @@ import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.net.Proxy;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -24,7 +27,9 @@ public class ConnectionFactory {
     private final Proxy proxy;
     private final String httpMethod;
     private final String relativeUrl;
+    private SeleniumDriverBuilder seleniumBuilder;
 
+    private final List<MethodHandler> methodHandlers;
     private final ParameterHandler<?>[] parameterHandlers;
 
     public ConnectionFactory(Builder builder) {
@@ -33,6 +38,8 @@ public class ConnectionFactory {
         this.httpMethod = builder.httpMethod;
         this.relativeUrl = builder.relativeUrl;
         this.proxy = builder.retrofit.proxy;
+        this.seleniumBuilder = builder.seleniumBuilder;
+        this.methodHandlers = builder.methodHandlers;
     }
 
     Connection create(Object[] args) throws IOException {
@@ -54,10 +61,15 @@ public class ConnectionFactory {
                         httpMethod,
                         baseUrl,
                         relativeUrl,
-                        proxy);
+                        proxy,
+                        seleniumBuilder);
 
         for (int p = 0; p < argumentCount; p++) {
             handlers[p].apply(connectionBuilder, args[p]);
+        }
+
+        for(MethodHandler handler: methodHandlers){
+            handler.apply(connectionBuilder);
         }
 
         return connectionBuilder.get();
@@ -69,12 +81,14 @@ public class ConnectionFactory {
         String httpMethod;
         String relativeUrl;
 
+        SeleniumDriverBuilder seleniumBuilder;
         final RetrofitCrawler retrofit;
         final Method method;
         final Annotation[] methodAnnotations;
         final Annotation[][] parameterAnnotationsArray;
         final Type[] parameterTypes;
         ParameterHandler<?>[] parameterHandlers;
+        List<MethodHandler> methodHandlers;
 
         Builder(RetrofitCrawler retrofit, Method method) {
             this.retrofit = retrofit;
@@ -82,6 +96,7 @@ public class ConnectionFactory {
             methodAnnotations = method.getDeclaredAnnotations();
             parameterAnnotationsArray = method.getParameterAnnotations();
             parameterTypes = method.getParameterTypes();
+            methodHandlers = new ArrayList<>();
         }
 
         ConnectionFactory build(){
@@ -121,6 +136,16 @@ public class ConnectionFactory {
                 parseHttpMethodAndPath("PATCH",((PUT) annotation).value());
             }else if(annotation instanceof TRACE){
                 parseHttpMethodAndPath("PATCH",((TRACE) annotation).value());
+            }else if(annotation instanceof Selenium){
+                this.seleniumBuilder = retrofit.webDriverBuilder();
+            }else if(annotation instanceof Javascript){
+                Javascript javascript = (Javascript)annotation;
+                methodHandlers.add(new MethodHandler.JavascriptHandler(javascript.value(),javascript.argument(),javascript.blockTime(),javascript.blockTimeUnit()));
+            }else if(annotation instanceof Javascripts){
+                Javascripts javascripts = (Javascripts)annotation;
+                for(Javascript javascript: javascripts.value()){
+                    methodHandlers.add(new MethodHandler.JavascriptHandler(javascript.value(),javascript.argument(),javascript.blockTime(),javascript.blockTimeUnit()));
+                }
             }
         }
 

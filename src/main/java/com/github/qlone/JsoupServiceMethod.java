@@ -1,5 +1,6 @@
 package com.github.qlone;
 
+import com.github.qlone.selenium.ConnectionManage;
 import org.jsoup.nodes.Document;
 
 import java.lang.annotation.Annotation;
@@ -23,11 +24,12 @@ abstract class JsoupServiceMethod<ResponseT, ReturnT> extends ServiceMethod<Retu
         Type ResponseType = callAdapter.responseType();
         Converter<Document, ResponseT> documentConverter = createDocumentConverter(retrofitCrawler, method, ResponseType);
 
-        return new CallAdapted<>(connectionFactory,callAdapter,documentConverter);
+        ConnectionManage client = retrofitCrawler.seleniumClient;
+        return new CallAdapted<>(connectionFactory,client,callAdapter,documentConverter);
     }
 
     ReturnT invoke(Object[] args) {
-        Call<ResponseT>  call = new JsoupCall<>(connectionFactory,args,documentConverter);
+        Call<ResponseT>  call = new JsoupCall<>(connectionFactory,args,seleniumClient,documentConverter);
         return adapt(call,args);
     }
 
@@ -36,10 +38,12 @@ abstract class JsoupServiceMethod<ResponseT, ReturnT> extends ServiceMethod<Retu
 
     private ConnectionFactory connectionFactory;
     private Converter<Document,ResponseT> documentConverter;
+    private ConnectionManage seleniumClient;
 
-    public JsoupServiceMethod(ConnectionFactory connectionFactory,Converter<Document,ResponseT> documentConverter) {
+    public JsoupServiceMethod(ConnectionFactory connectionFactory, ConnectionManage seleniumClient, Converter<Document,ResponseT> documentConverter) {
         this.connectionFactory = connectionFactory;
         this.documentConverter = documentConverter;
+        this.seleniumClient = seleniumClient;
     }
 
     private static <ResponseT, ReturnT> CallAdapter<ResponseT, ReturnT> createCallAdapter(
@@ -67,8 +71,8 @@ abstract class JsoupServiceMethod<ResponseT, ReturnT> extends ServiceMethod<Retu
     static final class CallAdapted<ResponseT, ReturnT> extends JsoupServiceMethod<ResponseT, ReturnT>{
         private final CallAdapter<ResponseT, ReturnT> callAdapter;
 
-        public CallAdapted(ConnectionFactory connectionFactory,CallAdapter<ResponseT, ReturnT> callAdapter,Converter<Document,ResponseT> documentConverter) {
-            super(connectionFactory,documentConverter);
+        public CallAdapted(ConnectionFactory connectionFactory, ConnectionManage seleniumClient, CallAdapter<ResponseT, ReturnT> callAdapter, Converter<Document,ResponseT> documentConverter) {
+            super(connectionFactory,seleniumClient,documentConverter);
             this.callAdapter = callAdapter;
         }
 

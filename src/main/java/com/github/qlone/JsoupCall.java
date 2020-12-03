@@ -1,9 +1,11 @@
 package com.github.qlone;
 
+import com.github.qlone.selenium.ConnectionManage;
 import org.jsoup.Connection;
 import org.jsoup.nodes.Document;
 
 import java.io.IOException;
+import java.util.concurrent.ExecutionException;
 
 /**
  * @author heweinan
@@ -14,14 +16,16 @@ public class JsoupCall<T> implements Call<T> {
     private final Converter<Document, T> documentTConverter;
     private final Object[] args;
 
+    private ConnectionManage connectionManage;
     private Connection rawConnection;
     private volatile boolean canceled;
     private boolean executed;
 
-    public JsoupCall(ConnectionFactory connectionFactory, Object[] args, Converter<Document, T> documentTConverter) {
+    public JsoupCall(ConnectionFactory connectionFactory, Object[] args, ConnectionManage connectionManage, Converter<Document, T> documentTConverter) {
         this.connectionFactory = connectionFactory;
         this.args = args;
         this.documentTConverter = documentTConverter;
+        this.connectionManage = connectionManage;
     }
 
     private Connection getCrawConnection() throws IOException {
@@ -55,7 +59,12 @@ public class JsoupCall<T> implements Call<T> {
             executed = true;
         }
 
-        return parseResponse(connection.execute());
+        try {
+            return parseResponse(connectionManage.execute(connection));
+        } catch (ExecutionException | InterruptedException e) {
+            e.printStackTrace();
+            return Response.error(null);
+        }
     }
 
     @Override
@@ -122,6 +131,6 @@ public class JsoupCall<T> implements Call<T> {
 
     @Override
     public JsoupCall<T> clone() {
-        return new JsoupCall<>(connectionFactory, args, documentTConverter);
+        return new JsoupCall<>(connectionFactory, args, connectionManage, documentTConverter);
     }
 }
