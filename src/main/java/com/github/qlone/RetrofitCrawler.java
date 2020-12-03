@@ -143,7 +143,7 @@ public final class RetrofitCrawler {
     public static class Builder{
         private String baseUrl;
         private java.net.Proxy proxy;
-        private int maxRequest;
+        private int maxRequest = 5;
         private SeleniumDriverBuilder seleniumBuilder;
         private ConnectionManage connectionManage;
         private List<CallAdapter.Factory> callAdapterFactories = new ArrayList<>();

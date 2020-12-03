@@ -35,7 +35,7 @@ public class ConnectionManage {
     }
 
     public void setMaxRequest(int maxRequest) {
-        if(maxRequest < 0){
+        if(maxRequest < 1){
             throw new IllegalArgumentException("max < 1: " + maxRequest);
         }
         this.maxRequest = maxRequest;
