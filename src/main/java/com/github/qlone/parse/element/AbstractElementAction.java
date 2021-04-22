@@ -30,7 +30,7 @@ public abstract class AbstractElementAction<RestultT> implements ElementAction<R
     public List<RestultT> action(Elements elements) {
         List<RestultT> array = new ArrayList<>(elements.size());
 
-        for (int i = skip; i < size && i < elements.size(); i++) {
+        for (int i = skip; array.size() < size && i < elements.size(); i++) {
             RestultT restultT = doAction(elements.get(i));
             array.add(restultT);
         }

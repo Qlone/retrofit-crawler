@@ -95,7 +95,7 @@ public class ConnectionFactory {
             this.method = method;
             methodAnnotations = method.getDeclaredAnnotations();
             parameterAnnotationsArray = method.getParameterAnnotations();
-            parameterTypes = method.getParameterTypes();
+            parameterTypes = method.getGenericParameterTypes();
             methodHandlers = new ArrayList<>();
         }
 

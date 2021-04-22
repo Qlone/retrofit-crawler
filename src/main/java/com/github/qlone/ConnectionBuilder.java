@@ -117,6 +117,7 @@ final class ConnectionBuilder {
         }
 
         connection.cookies(cookies);
+        connection.ignoreContentType(true);
         return connection;
     }
 
